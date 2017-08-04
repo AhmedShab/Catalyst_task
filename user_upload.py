@@ -16,12 +16,12 @@ def is_invalid_email(email):
 	return regex.search(email) == None
 
 def fix_fullname_format(fullname):
-	if does_fullname_contains_non_alphbet(fullname):
+	if contains_non_alpha_chars(fullname):
 		regex = re.compile("[^a-zA-Z]")
 		fullname["name"] = regex.sub("", fullname["name"])
 		fullname["surname"] = regex.sub("", fullname["surname"])
 
-def does_fullname_contains_non_alphbet(fullname):
+def contains_non_alpha_chars(fullname):
 	regex = re.compile("[.,\/#!$%\^&\*;:{}=\-_`~()]")
 	return regex.search(fullname["name"]) is not None or regex.search(fullname["surname"]) is not None
 
@@ -66,7 +66,7 @@ if options.file:
 				# insert_into_table(row)
 				print(row["name"], row["surname"], row["email"])
 
-			except Exception as e:
+			except KeyError as e:
 				print "the email is invalid! Please use a valid email"
 				# no insertion happens
 				continue
