@@ -21,9 +21,20 @@ def fix_fullname_format(fullname):
 		fullname["name"] = regex.sub("", fullname["name"])
 		fullname["surname"] = regex.sub("", fullname["surname"])
 
+	capitalize_full_name(fullname)
+
 def contains_non_alpha_chars(fullname):
 	regex = re.compile("[.,\/#!$%\^&\*;:{}=\-_`~()]")
 	return regex.search(fullname["name"]) is not None or regex.search(fullname["surname"]) is not None
+
+def capitalize_full_name(fullname):
+	fullname["name"] = fullname["name"].capitalize()
+	fullname["surname"] = fullname["surname"].capitalize()
+
+def remove_whitespaces(data):
+	data["name"] = data["name"].strip()
+	data["surname"] = data["surname"].strip()
+	data["email"] = data["email"].strip()
 
 def main():
 	create_table = "--create_table"
@@ -64,6 +75,7 @@ def main():
 				try:
 					remove_invalid_email(row)
 					fix_fullname_format(row)
+					remove_whitespaces(row)
 					# insert_into_table(row)
 					print(row["name"], row["surname"], row["email"])
 
@@ -84,4 +96,4 @@ def main():
 
 	db.close()
 
-main()	
+main()
