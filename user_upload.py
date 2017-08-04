@@ -64,7 +64,7 @@ def remove_whitespaces(data):
 	data["email"] = data["email"].strip()
 
 def set_email_lower_case(emails):
-	emails["email"] = emails["email"].lower()
+	return emails["email"].lower()
 
 def parse_csvfile(filename, db):
 	cursor = db.cursor()
@@ -77,7 +77,7 @@ def parse_csvfile(filename, db):
 				remove_invalid_email(row)
 				fix_fullname_format(row)
 				remove_whitespaces(row)
-				set_email_lower_case(row)
+				row["email"] = set_email_lower_case(row)
 				insert_into_table(row, db)
 
 			except KeyError as e:
