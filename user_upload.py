@@ -110,7 +110,7 @@ def main():
 					insert_into_table(row, db)
 
 				except KeyError as e:
-					print "the email is invalid! Please use a valid email"
+					print "The email is invalid! It won't be saved into the database. Please use a valid email"
 					continue
 
 	elif options.create_table:
