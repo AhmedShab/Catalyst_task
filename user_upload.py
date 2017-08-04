@@ -4,8 +4,35 @@ import MySQLdb
 import optparse
 import re
 
-def insert_into_table(user_data):
-    return None
+def append_quote_to_names(surname, single_quote):
+	return surname[:1] + single_quote + surname[1:]
+
+def contains_single_quote(surname, single_quote):
+	return surname.find(single_quote) > -1
+
+
+def insert_into_table(user_data, db):
+	cursor = db.cursor()
+	single_quote = "'"
+	get_surname = user_data["surname"]
+	surname = get_surname if not contains_single_quote(user_data["surname"], single_quote) else append_quote_to_names(get_surname, single_quote)
+
+	sql = """
+			insert into users(name, surname, email)
+			values('{}', '{}', '{}')
+		  """.format(user_data["name"],
+		  			 surname,
+					 user_data["email"])
+
+	try:
+		cursor.execute(sql)
+		db.commit()
+
+	except Exception as e:
+		print "Database error"
+		db.rollback()
+
+	print "User data has been saved successfully"
 
 def remove_invalid_email(data):
     if is_invalid_email(data["email"]):
@@ -80,12 +107,10 @@ def main():
 					fix_fullname_format(row)
 					remove_whitespaces(row)
 					set_email_lower_case(row)
-					# insert_into_table(row)
-					print(row["name"], row["surname"], row["email"])
+					insert_into_table(row, db)
 
 				except KeyError as e:
 					print "the email is invalid! Please use a valid email"
-					# no insertion happens
 					continue
 
 	elif options.create_table:
