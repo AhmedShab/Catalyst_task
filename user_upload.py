@@ -4,6 +4,7 @@ import MySQLdb
 import optparse
 import re
 from MySQLdb import IntegrityError
+from MySQLdb import ProgrammingError
 
 def append_quote_to_names(surname, single_quote):
 	return surname[:1] + single_quote + surname[1:]
@@ -26,6 +27,7 @@ def insert_into_table(user_data, db):
 	try:
 		cursor.execute(sql)
 		db.commit()
+		cursor.close()
 
 	except IntegrityError as e:
 		print "The email {} exists! Cannot save duplicate emails".format(user_data["email"])
@@ -86,15 +88,23 @@ def parse_csvfile(filename, db):
 
 def create_table(db):
 	cursor = db.cursor()
-	cursor.execute("drop table if exists users")
-	sql = """create table users(
-			name char(20),
-			surname char(20),
-			email char(30),
-			unique (email)
-			);"""
-	cursor.execute(sql)
-	print "Created the users table successfully"
+
+	try:
+		cursor.execute("drop table if exists users")
+		sql = """create table users(
+				name char(20),
+				surname char(20),
+				email char(30),
+				unique (email)
+				);"""
+		cursor.execute(sql)
+
+	except ProgrammingError as e:
+		print "Could not create a new table! You have a syntax error "
+
+	else:
+		cursor.close()
+		print "Created the users table successfully"
 
 def main():
 	parser = optparse.OptionParser()
@@ -120,14 +130,20 @@ def main():
 	help="MySQL host")
 
 	(options, args) = parser.parse_args()
-	db = MySQLdb.connect(host=options.host, user=options.username, passwd=options.password, db="record")
 
-	if options.file:
-		parse_csvfile(options.file, db)
+	try:
+		db = MySQLdb.connect(host=options.host, user=options.username, passwd=options.password, db="record")
 
-	elif options.create_table:
-		create_table(db)
+		if options.file:
+			parse_csvfile(options.file, db)
 
-	db.close()
+		elif options.create_table:
+			create_table(db)
+
+	except TypeError as e:
+		print "Please provide username, password and host to connect to the database"
+
+	else:
+		db.close()
 
 main()
