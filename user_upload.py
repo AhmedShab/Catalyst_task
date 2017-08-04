@@ -15,6 +15,16 @@ def is_invalid_email(email):
 	regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 	return regex.search(email) == None
 
+def fix_fullname_format(fullname):
+	if does_fullname_contains_non_alphbet(fullname):
+		regex = re.compile("[^a-zA-Z]")
+		fullname["name"] = regex.sub("", fullname["name"])
+		fullname["surname"] = regex.sub("", fullname["surname"])
+
+def does_fullname_contains_non_alphbet(fullname):
+	regex = re.compile("[.,\/#!$%\^&\*;:{}=\-_`~()]")
+	return regex.search(fullname["name"]) is not None or regex.search(fullname["surname"]) is not None
+
 create_table = "--create_table"
 upload_file = "--file"
 
@@ -51,9 +61,8 @@ if options.file:
 		data = csv.DictReader(csvfile)
 		for row in data:
 			try:
-				row["email"] = row.pop("email\t")
 				remove_invalid_email(row)
-				# call insert_into_table with a valid email
+				fix_fullname_format(row)
 				# insert_into_table(row)
 				print(row["name"], row["surname"], row["email"])
 
