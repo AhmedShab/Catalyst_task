@@ -68,7 +68,7 @@ def remove_whitespaces(data):
 def set_email_lower_case(emails):
 	return emails["email"].lower()
 
-def parse_csvfile(filename, db):
+def parse_csvfile(filename, db, include_table_insertion = True):
 	cursor = db.cursor()
 
 	with open(filename, 'rb') as csvfile:
@@ -80,7 +80,9 @@ def parse_csvfile(filename, db):
 				fix_fullname_format(row)
 				remove_whitespaces(row)
 				row["email"] = set_email_lower_case(row)
-				insert_into_table(row, db)
+
+				if include_table_insertion:
+					insert_into_table(row, db)
 
 			except KeyError as e:
 				print "The email is invalid! It won't be saved into the database. Please use a valid email"
@@ -110,24 +112,28 @@ def main():
 	parser = optparse.OptionParser()
 
 	parser.add_option('--file',
-	action="store", type="string",
-	dest="file",help="require the csv file to insert the data into the users table")
+					action="store", type="string",
+					dest="file",help="Require the csv file to insert the data into the users table")
 
 	parser.add_option('--create_table',
-	action="store_true", dest="create_table",
-	help="This will build/rebuild a new table")
+					action="store_true", dest="create_table",
+					help="This will build/rebuild a new table")
+
+	parser.add_option('--dry_run',
+					action="store", type="string",
+					dest="dry_run", help="Runs the script without inserting into the users table")
 
 	parser.add_option('-u',
-	action="store", dest="username",
-	help="MySQL username")
+					action="store", dest="username",
+					help="MySQL username -- required")
 
 	parser.add_option('-p',
-	action="store", dest="password",
-	help="MySQL password")
+					action="store", dest="password",
+					help="MySQL password -- required")
 
 	parser.add_option('--host',
-	action="store", dest="host",
-	help="MySQL host")
+					action="store", dest="host",
+					help="MySQL host -- required")
 
 	(options, args) = parser.parse_args()
 
@@ -139,6 +145,11 @@ def main():
 
 		elif options.create_table:
 			create_table(db)
+
+		elif options.dry_run:
+			include_table_insertion = False
+			print "This option will run the script without saving the data into the table"
+			parse_csvfile(options.dry_run, db, include_table_insertion)
 
 	except TypeError as e:
 		print "Please provide username, password and host to connect to the database"
