@@ -7,11 +7,13 @@ import re
 def insert_into_table(user_data):
     return None
 
-def remove_invalidate_emails(data):
-    is_valid = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
-    if (is_valid.search(data["email"]) == None):
+def remove_invalid_email(data):
+    if is_invalid_email(data["email"]):
         del data["email"]
-        return None
+
+def is_invalid_email(email):
+	regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+	return regex.search(email) == None
 
 create_table = "--create_table"
 upload_file = "--file"
@@ -50,7 +52,7 @@ if options.file:
 		for row in data:
 			try:
 				row["email"] = row.pop("email\t")
-				remove_invalidate_emails(row)
+				remove_invalid_email(row)
 				# call insert_into_table with a valid email
 				# insert_into_table(row)
 				print(row["name"], row["surname"], row["email"])
