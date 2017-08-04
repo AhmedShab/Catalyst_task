@@ -28,10 +28,11 @@ def insert_into_table(user_data, db):
 		db.commit()
 
 	except IntegrityError as e:
-		print "This email exists! Cannot save duplicate emails"
+		print "The email {} exists! Cannot save duplicate emails".format(user_data["email"])
 		db.rollback()
 
-	print "User data has been saved successfully"
+	else:
+		print "User data has been saved successfully"
 
 def remove_invalid_email(data):
     if is_invalid_email(data["email"]):
@@ -65,7 +66,7 @@ def remove_whitespaces(data):
 def set_email_lower_case(emails):
 	emails["email"] = emails["email"].lower()
 
-def run_parse_csvfile(filename, db):
+def parse_csvfile(filename, db):
 	cursor = db.cursor()
 
 	with open(filename, 'rb') as csvfile:
@@ -83,7 +84,7 @@ def run_parse_csvfile(filename, db):
 				print "The email is invalid! It won't be saved into the database. Please use a valid email"
 				continue
 
-def run_create_table(db):
+def create_table(db):
 	cursor = db.cursor()
 	cursor.execute("drop table if exists users")
 	sql = """create table users(
@@ -122,10 +123,10 @@ def main():
 	db = MySQLdb.connect(host=options.host, user=options.username, passwd=options.password, db="record")
 
 	if options.file:
-		run_parse_csvfile(options.file, db)
+		parse_csvfile(options.file, db)
 
 	elif options.create_table:
-		run_create_table(db)
+		create_table(db)
 
 	db.close()
 
