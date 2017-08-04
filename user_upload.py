@@ -56,9 +56,16 @@ def contains_non_alpha_chars(fullname):
 	regex = re.compile("[.,\/#!$%\^&\*;:{}=\-_`~()]")
 	return regex.search(fullname["name"]) is not None or regex.search(fullname["surname"]) is not None
 
+def capitalize_surname(surname):
+	char_index = 2
+	return surname.replace(surname[char_index], surname[char_index].capitalize())
+
 def capitalize_full_name(fullname):
 	fullname["name"] = fullname["name"].capitalize()
 	fullname["surname"] = fullname["surname"].capitalize()
+
+	if contains_single_quote(fullname["surname"], "'"):
+		fullname["surname"] = capitalize_surname(fullname["surname"])
 
 def remove_whitespaces(data):
 	data["name"] = data["name"].strip()
