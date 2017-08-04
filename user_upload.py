@@ -3,7 +3,6 @@ import csv
 import MySQLdb
 import optparse
 import re
-
 from MySQLdb import IntegrityError
 
 def append_quote_to_names(surname, single_quote):
@@ -12,13 +11,11 @@ def append_quote_to_names(surname, single_quote):
 def contains_single_quote(surname, single_quote):
 	return surname.find(single_quote) > -1
 
-
 def insert_into_table(user_data, db):
 	cursor = db.cursor()
 	single_quote = "'"
 	get_surname = user_data["surname"]
 	surname = get_surname if not contains_single_quote(user_data["surname"], single_quote) else append_quote_to_names(get_surname, single_quote)
-
 	sql = """
 			insert into users(name, surname, email)
 			values('{}', '{}', '{}')
@@ -96,7 +93,6 @@ def run_create_table(db):
 			unique (email)
 			);"""
 	cursor.execute(sql)
-
 	print "Created the users table successfully"
 
 def main():
