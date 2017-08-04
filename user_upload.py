@@ -4,6 +4,8 @@ import MySQLdb
 import optparse
 import re
 
+from MySQLdb import IntegrityError
+
 def append_quote_to_names(surname, single_quote):
 	return surname[:1] + single_quote + surname[1:]
 
@@ -28,8 +30,8 @@ def insert_into_table(user_data, db):
 		cursor.execute(sql)
 		db.commit()
 
-	except Exception as e:
-		print "Database error"
+	except IntegrityError as e:
+		print "This email exists! Cannot save duplicate emails"
 		db.rollback()
 
 	print "User data has been saved successfully"
@@ -66,10 +68,38 @@ def remove_whitespaces(data):
 def set_email_lower_case(emails):
 	emails["email"] = emails["email"].lower()
 
-def main():
-	create_table = "--create_table"
-	upload_file = "--file"
+def run_parse_csvfile(filename, db):
+	cursor = db.cursor()
 
+	with open(filename, 'rb') as csvfile:
+		data = csv.DictReader(csvfile)
+
+		for row in data:
+			try:
+				remove_invalid_email(row)
+				fix_fullname_format(row)
+				remove_whitespaces(row)
+				set_email_lower_case(row)
+				insert_into_table(row, db)
+
+			except KeyError as e:
+				print "The email is invalid! It won't be saved into the database. Please use a valid email"
+				continue
+
+def run_create_table(db):
+	cursor = db.cursor()
+	cursor.execute("drop table if exists users")
+	sql = """create table users(
+			name char(20),
+			surname char(20),
+			email char(30),
+			unique (email)
+			);"""
+	cursor.execute(sql)
+
+	print "Created the users table successfully"
+
+def main():
 	parser = optparse.OptionParser()
 
 	parser.add_option('--file',
@@ -93,35 +123,13 @@ def main():
 	help="MySQL host")
 
 	(options, args) = parser.parse_args()
-
 	db = MySQLdb.connect(host=options.host, user=options.username, passwd=options.password, db="record")
 
-	cursor = db.cursor()
-
 	if options.file:
-		with open(options.file, 'rb') as csvfile:
-			data = csv.DictReader(csvfile)
-			for row in data:
-				try:
-					remove_invalid_email(row)
-					fix_fullname_format(row)
-					remove_whitespaces(row)
-					set_email_lower_case(row)
-					insert_into_table(row, db)
-
-				except KeyError as e:
-					print "The email is invalid! It won't be saved into the database. Please use a valid email"
-					continue
+		run_parse_csvfile(options.file, db)
 
 	elif options.create_table:
-		cursor.execute("drop table if exists users")
-		sql = """create table users(
-				name char(20),
-				surname char(20),
-				email char(30),
-				unique (email)
-				);"""
-		cursor.execute(sql)
+		run_create_table(db)
 
 	db.close()
 
