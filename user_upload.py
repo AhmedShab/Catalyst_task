@@ -36,6 +36,9 @@ def remove_whitespaces(data):
 	data["surname"] = data["surname"].strip()
 	data["email"] = data["email"].strip()
 
+def set_email_lower_case(emails):
+	emails["email"] = emails["email"].lower()
+
 def main():
 	create_table = "--create_table"
 	upload_file = "--file"
@@ -76,6 +79,7 @@ def main():
 					remove_invalid_email(row)
 					fix_fullname_format(row)
 					remove_whitespaces(row)
+					set_email_lower_case(row)
 					# insert_into_table(row)
 					print(row["name"], row["surname"], row["email"])
 
