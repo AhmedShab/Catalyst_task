@@ -3,6 +3,9 @@ import csv
 import MySQLdb
 import optparse
 
+def insert_into_table(user_data):
+    return None
+
 create_table = "--create_table"
 upload_file = "--file"
 
@@ -36,9 +39,11 @@ cursor = db.cursor()
 
 if options.file:
     with open(options.file, 'rb') as csvfile:
-        filename = csv.reader(csvfile)
-        for row in filename:
-            print(row)
+        data = csv.DictReader(csvfile)
+        for row in data:
+            row["email"] = row.pop("email\t")
+
+            print(row["name"], row["surname"], row["email"])
 
 elif options.create_table:
         cursor.execute("drop table if exists users")
