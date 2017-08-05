@@ -57,7 +57,7 @@ def fix_fullname_format(fullname):
 	capitalize_full_name(fullname)
 
 def contains_non_alpha_chars(fullname):
-	regex = re.compile("[.,\/#!$%\^&\*;:{}=\-_`~()]")
+	regex = re.compile("[.,\/#!?$%\^&\*;:{}=\-_`~()]")
 	return regex.search(fullname["name"]) is not None or regex.search(fullname["surname"]) is not None
 
 def capitalize_surname(surname):

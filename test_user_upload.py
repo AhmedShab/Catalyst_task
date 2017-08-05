@@ -2,6 +2,7 @@ from user_upload import append_quote_to_names
 from user_upload import contains_single_quote
 from user_upload import remove_invalid_email
 from user_upload import is_invalid_email
+from user_upload import fix_fullname_format
 
 
 def test_surname_contains_quote__append_quote():
@@ -44,3 +45,11 @@ def test_remove_invalid_email__should_not_remove_email():
     test = {"email": "ahmed@gmail.com"}
 
     assert remove_invalid_email(test) == expacted
+
+def test_fix_fullname_format__should_return_fixed_text():
+    expacted = {"name": "Ahmed", "surname": "Shaaban"}
+    test = {"name": "ahmed?", "surname": "shaaban***?"}
+
+    fix_fullname_format(test)
+
+    assert test == expacted
