@@ -37,8 +37,12 @@ def insert_into_table(user_data, db):
 		print "User data has been saved successfully"
 
 def remove_invalid_email(data):
-    if is_invalid_email(data["email"]):
-        del data["email"]
+	email = data
+	if is_invalid_email(email["email"]):
+		del email["email"]
+
+	return email["email"]
+
 
 def is_invalid_email(email):
 	regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
@@ -83,7 +87,7 @@ def parse_csvfile(filename, db, include_table_insertion = True):
 
 		for row in data:
 			try:
-				remove_invalid_email(row)
+				row["email"] = remove_invalid_email(row)
 				fix_fullname_format(row)
 				remove_whitespaces(row)
 				row["email"] = set_email_lower_case(row)
