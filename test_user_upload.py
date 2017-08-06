@@ -49,3 +49,11 @@ def test_fix_fullname_format__should_return_fixed_text():
     user_upload.fix_fullname_format(test)
 
     assert test == expacted
+
+def test_clean_whitespaces__should_remove_whitespaces():
+    expacted = {"name": "ahmed", "surname": "shaaban", "email": "ahmed@gmail.com"}
+    test = {"name": "ahmed   ", "surname": "   shaaban", "email": "      ahmed@gmail.com   "}
+
+    user_upload.remove_whitespaces(test)
+
+    assert test == expacted
