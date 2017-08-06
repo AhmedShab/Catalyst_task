@@ -82,22 +82,26 @@ def set_email_lower_case(emails):
 def parse_csvfile(filename, db, include_table_insertion = True):
 	cursor = db.cursor()
 
-	with open(filename, 'rb') as csvfile:
-		data = csv.DictReader(csvfile)
+	try:
+		with open(filename, 'rb') as csvfile:
+			data = csv.DictReader(csvfile)
 
-		for row in data:
-			try:
-				row["email"] = remove_invalid_email(row)
-				fix_fullname_format(row)
-				remove_whitespaces(row)
-				row["email"] = set_email_lower_case(row)
+			for row in data:
+				try:
+					row["email"] = remove_invalid_email(row)
+					fix_fullname_format(row)
+					remove_whitespaces(row)
+					row["email"] = set_email_lower_case(row)
 
-				if include_table_insertion:
-					insert_into_table(row, db)
+					if include_table_insertion:
+						insert_into_table(row, db)
 
-			except KeyError as e:
-				print "The email is invalid! It won't be saved into the database. Please use a valid email"
-				continue
+				except KeyError as e:
+					print "The email is invalid! It won't be saved into the database. Please use a valid email"
+					continue
+
+	except IOError as e:
+		print "File is incorrect, please provid csv file"
 
 def create_table(db):
 	cursor = db.cursor()
