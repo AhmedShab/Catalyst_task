@@ -42,7 +42,7 @@ def test_remove_invalid_email__should_not_remove_email():
 
     assert user_upload.remove_invalid_email(test) == expacted
 
-def test_fix_fullname_format__should_return_fixed_text():
+def test_fix_fullname_format__return_fixed_text():
     expacted = {"name": "Ahmed", "surname": "Shaaban"}
     test = {"name": "ahmed?", "surname": "shaaban***?"}
 
