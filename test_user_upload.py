@@ -65,7 +65,12 @@ class TestUserUpload(unittest.TestCase):
         expacted = "ahmed@gmail.com"
         test = {"email": "AHMED@gmaIL.com"}
 
-        self.assertTrue(user_upload.set_email_lower_case(test), expacted)    
+        self.assertTrue(user_upload.set_email_lower_case(test), expacted)
+
+    def test_incorrect_csvfilename__should_catch_IOError_error(self):
+        db = MagicMock(return_value="connection succeeded")
+
+        user_upload.parse_csvfile("test", db, False)    
 
 if __name__ == "__main__":
     unittest.main()
