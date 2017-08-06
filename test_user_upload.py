@@ -57,3 +57,10 @@ def test_clean_whitespaces__should_remove_whitespaces():
     user_upload.remove_whitespaces(test)
 
     assert test == expacted
+
+
+def test_set_email_lower_case__return_lower_case_email():
+    expacted = "ahmed@gmail.com"
+    test = {"email": "AHMED@gmaIL.com"}
+
+    assert user_upload.set_email_lower_case(test) == expacted
