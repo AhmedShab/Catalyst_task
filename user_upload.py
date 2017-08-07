@@ -12,11 +12,18 @@ def append_quote_to_names(surname, single_quote):
 def contains_single_quote(surname, single_quote):
 	return surname.find(single_quote) > -1
 
+def get_surname(surname):
+	single_quote = "'"
+
+	if not contains_single_quote(surname, single_quote):
+		return surname
+
+	else:
+		return append_quote_to_names(surname, single_quote)
+
 def insert_into_table(user_data, db):
 	cursor = db.cursor()
-	single_quote = "'"
-	get_surname = user_data["surname"]
-	surname = get_surname if not contains_single_quote(user_data["surname"], single_quote) else append_quote_to_names(get_surname, single_quote)
+	surname = get_surname(user_data["surname"])
 	sql = """
 			insert into users(name, surname, email)
 			values('{}', '{}', '{}')
@@ -101,7 +108,7 @@ def parse_csvfile(filename, db, include_table_insertion = True):
 					continue
 
 	except IOError as e:
-		print "File is incorrect, please provid csv file"
+		print "File is incorrect, please provide csv file"
 
 def create_table(db):
 	cursor = db.cursor()
